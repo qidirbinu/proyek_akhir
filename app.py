@@ -8,8 +8,9 @@ with open('bullying_model.pkl', 'wb') as file:
 
 # Function to preprocess the input (sesuaikan jika perlu)
 def preprocess_text(input_text):
-    # Lakukan preprocessing pada input_text jika diperlukan, misalnya tokenization, stop word removal, dll.
-    # Untuk contoh ini, kita asumsikan input sudah bisa langsung diprediksi oleh model
+    input_text = re.sub(r'[^a-zA-Z\s]', '', text)
+    input_text = input_text.lower()
+    input_text = ' '.join([word for word in text.split() if word not in stop_words])
     return np.array([input_text])
 
 # Streamlit app
