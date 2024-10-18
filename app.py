@@ -1,35 +1,38 @@
 import streamlit as st
-import joblib
-import re
-from nltk.corpus import stopwords
+import pickle
+import numpy as np
 
-# Muat daftar stopwords bahasa inggris
-stop_words = set(stopwords.words('english'))
+# Load the trained model
+with open('bullying_model.pkl', 'rb') as file:
+    model = pickle.load(file)
 
-# Fungsi untuk membersihkan teks
-def preprocess_text(text):
-    # Menghapus tanda baca dan angka
-    text = re.sub(r'[^a-zA-Z\s]', '', text)
-    # Mengubah teks menjadi huruf kecil
-    text = text.lower()
-    # Menghapus stop words
-    text = ' '.join([word for word in text.split() if word not in stop_words])
-    return text
+# Function to preprocess the input (sesuaikan jika perlu)
+def preprocess_text(input_text):
+    # Lakukan preprocessing pada input_text jika diperlukan, misalnya tokenization, stop word removal, dll.
+    # Untuk contoh ini, kita asumsikan input sudah bisa langsung diprediksi oleh model
+    return np.array([input_text])
 
-# Muat model
-model = joblib.load('bullying_model.pkl')
+# Streamlit app
+st.title('Text Classification App')
+st.write('Masukkan kalimat dan dapatkan hasil prediksi golongan A atau B berdasarkan model')
 
-# Fungsi prediksi
-def predict_bullying(text):
-    cleaned_text = preprocess_text(text)
-    prediction = model.predict([cleaned_text])
-    return 'Cyberbullying' if prediction[0] == 1 else 'Not Cyberbullying'
+# Input dari pengguna
+user_input = st.text_input('Masukkan kalimat:', '')
 
-# Aplikasi Streamlit
-st.title("Cyberbullying Detection App")
-st.write("Masukkan tweet untuk memprediksi apakah itu merupakan tweet bullying atau bukan.")
+if user_input:
+    # Preprocess input
+    processed_input = preprocess_text(user_input)
+    
+    # Prediksi menggunakan model
+    prediction = model.predict(processed_input)
+    prediction_prob = model.predict_proba(processed_input)[0][1]  # Mendapatkan probabilitas kelas B
 
-input_text = st.text_area("Input Tweet")
-if st.button("Prediksi"):
-    result = predict_bullying(input_text)
-    st.write(f"Hasil Prediksi: {result}")
+    # Tentukan kategori berdasarkan threshold 0.5
+    if prediction_prob > 0.5:
+        result = "Cyberbullying"
+    else:
+        result = "bukan Cyberbullying"
+
+    # Tampilkan hasil prediksi
+    st.write(f"Prediksi: {result}")
+    st.write(f"Probabilitas: {prediction_prob:.2f}")
