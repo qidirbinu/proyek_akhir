@@ -1,14 +1,16 @@
 import streamlit as st
 import pickle
 import numpy as np
+import re
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as stop_words
 
 # Load the trained model
-with open('bullying_model.pkl', 'wb') as file:
+with open('bullying_model.pkl', 'rb') as file:
     model = pickle.load(file)
 
 # Function to preprocess the input (sesuaikan jika perlu)
 def preprocess_text(input_text):
-    input_text = re.sub(r'[^a-zA-Z\s]', '', text)
+    input_text = re.sub(r'[^a-zA-Z\s]', '', input_text)
     input_text = input_text.lower()
     input_text = ' '.join([word for word in text.split() if word not in stop_words])
     return np.array([input_text])
