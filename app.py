@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # Load the trained model
-with open('bullying_model.pkl', 'rb') as file:
+with open('bullying_model.pkl', 'wb') as file:
     model = pickle.load(file)
 
 # Function to preprocess the input (sesuaikan jika perlu)
